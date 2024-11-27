@@ -59,6 +59,10 @@ app.get("/ab+c" ,(req,res)=>{
 app.get("/ab*cd" ,(req,res)=>{
     res.send("hello from the routing star")
 })
+app.get("/ab*cd" ,(req,res)=>{
+    res.send("hello from the routing star")
+})
+
  
  
 //this will work for abcd , /a(bc)?d this means bc will be optional if you write acd this will not work
