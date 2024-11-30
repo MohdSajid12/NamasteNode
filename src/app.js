@@ -1,22 +1,44 @@
 const express = require("express");
 const  app = express();
 
-//if middleware folder out of src folder then we have to write
-// require('../middleware/auth') this reflects root folder
-const {adminAuth, userAuth} = require('./middleware/auth')
-//this is middle ware
- app.use("/admin" , adminAuth);
+//always use try catch because it handles everything
+//routes handles every call one by one
+app.use("/",(err,req,res,next)=>{
+    if(err)
+    {
+        res.status(500).send("something went wrong");
+    }
+})
  
-//if any user route will come first i will go to is userAuth this will check user is authenicated or not
-//if not then ww will send status code and this route never go ahed
-app.get("/user",  userAuth ,(req,res)=>{
-      res.send("user has passed all the authentication")
+app.get("/getUserData" ,(req,res)=>{
+    //   res.send("user has passed ")
+    try{
+    //   throw new Error("dddsd");
+      res.send("user data has been sent");
+    }
+    catch(err)
+    {
+        res.status(401).send("hello something went wrong");
+    }  
+})
+ 
+
+//first of all when request is call it will app.use("/") if any error dont occur then we will move ahead
+// if any error occurs then we will not move ahead
+//if will use at the end
+app.use("/",(err,req,res,next)=>{
+ 
+    if(err)
+    {
+        res.status(500).send("something went wrong");
+    }
+ 
 })
  
 app.get("/admin/getAllData" , (req,res)=>{
     res.send("catching all the user data");
 })
- 
+
  
  
 app.listen(7777,()=>{
