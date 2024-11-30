@@ -87,6 +87,22 @@ app.get("/findbyId" ,async(req,res)=>{
 })
 
 
+app.delete("/findbyIdAndDelete",async(req,res)=>{
+    const userId = req.body.id;
+    try
+    {
+        // both will work
+        const user = await User.findByIdAndDelete(userId);
+        // await User.findByIdAndDelete({_id : userId});
+        res.send("deleted successfully");
+    } catch(err){
+        res.send("something went wrong");
+    }
+})
+
+
+
+
 app.post("/" ,(err,req,res,next)=>{
     if(err)
     {
