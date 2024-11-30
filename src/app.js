@@ -69,6 +69,24 @@ app.get("/getOneUserData",async (req,res)=>{
 })
 
 
+app.get("/findbyId" ,async(req,res)=>{
+    const id = req.body.userId;
+    try
+    {
+        const users = await User.findById(id);
+        if(!users)
+        {
+            res.status(404).send("user not found");
+        } else
+        {
+            res.send(users);
+        }
+    } catch(err){
+        res.send(400).send("something went wrong");
+    }
+})
+
+
 app.post("/" ,(err,req,res,next)=>{
     if(err)
     {
