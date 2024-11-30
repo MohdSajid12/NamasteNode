@@ -1,27 +1,24 @@
 const express = require("express");
 const  app = express();
 
-
-app.get("/user",(req,res,next)=>{
-    //  res.send("hello from the second response");
-    console.log("hello chechikng")
-     next();
-})    
+//if middleware folder out of src folder then we have to write
+// require('../middleware/auth') this reflects root folder
+const {adminAuth, userAuth} = require('./middleware/auth')
+//this is middle ware
+ app.use("/admin" , adminAuth);
  
-app.get("/user" ,(req,res,next)=>{
-    console.log("this is the first response");
-    next();
-})    
- 
- 
-// how express works
-// basically a request comes to express js servers the job of expressJS server is to go one by one
-// and goes from the top to bottom to all the handlers and all the app.function and try to send the response back if
-// it does not fine matching url if he does not able the send the response back it just will hang thats how express works
- 
-//GET users => middleware chain  => response handle request
-
-app.listen(7777,()=>{
-    console.log(`server is listen at the port of ${7777}`)
+//if any user route will come first i will go to is userAuth this will check user is authenicated or not
+//if not then ww will send status code and this route never go ahed
+app.get("/user",  userAuth ,(req,res)=>{
+      res.send("user has passed all the authentication")
 })
-
+ 
+app.get("/admin/getAllData" , (req,res)=>{
+    res.send("catching all the user data");
+})
+ 
+ 
+ 
+app.listen(7777,()=>{
+    console.log(`server is listening at the port of ${7777}`)
+})
