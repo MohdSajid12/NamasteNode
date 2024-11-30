@@ -2,19 +2,24 @@ const express = require("express");
 const  app = express();
 
 
-//a route has many route handler like this
-app.use("/user" ,(req,res,next)=>{
-    // res.send("route handler 1");
-    console.log("hello from the response 1");
+app.get("/user",(req,res,next)=>{
+    //  res.send("hello from the second response");
+    console.log("hello chechikng")
+     next();
+})    
+ 
+app.get("/user" ,(req,res,next)=>{
+    console.log("this is the first response");
     next();
-},(req,res,next)=>{
-    console.log("hello from the response 2");
-    // res.send("hello from the response 2");
-    next();
-}, (req,res,next)=>{
-    console.log("hello from the response 3");
-    // res.send("hello from the response 3")
-})
+})    
+ 
+ 
+// how express works
+// basically a request comes to express js servers the job of expressJS server is to go one by one
+// and goes from the top to bottom to all the handlers and all the app.function and try to send the response back if
+// it does not fine matching url if he does not able the send the response back it just will hang thats how express works
+ 
+//GET users => middleware chain  => response handle request
 
 app.listen(7777,()=>{
     console.log(`server is listen at the port of ${7777}`)
