@@ -100,7 +100,33 @@ app.delete("/findbyIdAndDelete",async(req,res)=>{
     }
 })
 
+//Update-Api - update the data of the user
+//in the update  api if you are passing some extra innfromation or some extra line
+//which is not present in the document like skills cloumn not present in your database
+//and you are passing if not present in the  schema it will not not in the docuemnt
+//it will ignore it
 
+app.patch("/findAndUpdate" ,async (req,res)=>{
+    const id = req.body.id;
+    const data = req.body;
+    try{
+        await User.findByIdAndUpdate({_id:id},data);
+        res.send("User updated successfully");
+    } catch(err){
+       res.status(400).send("Something went wrong");
+    }
+
+    //{returnDocument:"before"} is option parameter ka mtlb h ki update krne se phle
+    //jo old data h use retrun krta h agr isme after lga denge to update ke bad ka data
+    //return krega
+    // try{
+    //     const user =await User.findByIdAndUpdate({_id:id},data ,{returnDocument:"before"});
+    //     console.log(user);
+    //     res.send("User updated successfully");
+    // } catch(err){
+    //    res.status(400).send("Something went wrong");
+    // }
+})
 
 
 app.post("/" ,(err,req,res,next)=>{
