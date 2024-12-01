@@ -113,14 +113,20 @@ app.patch("/findAndUpdate" ,async (req,res)=>{
         await User.findByIdAndUpdate({_id:id},data);
         res.send("User updated successfully");
     } catch(err){
-       res.status(400).send("Something went wrong");
+       res.status(400).send("Something went wrong"+ err.message);
     }
 
     //{returnDocument:"before"} is option parameter ka mtlb h ki update krne se phle
     //jo old data h use retrun krta h agr isme after lga denge to update ke bad ka data
     //return krega
+    //{runValidators:true} this will allow to run validate function that we have defined
+    //in the our schema if we will not add then by default validate function should run
+    //when we will create  new user not for updating user
+
+    
     // try{
-    //     const user =await User.findByIdAndUpdate({_id:id},data ,{returnDocument:"before"});
+    //     const user =await User.findByIdAndUpdate({_id:id},data ,{returnDocument:"before"},
+      //            runValidators:true);
     //     console.log(user);
     //     res.send("User updated successfully");
     // } catch(err){
