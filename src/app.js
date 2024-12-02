@@ -68,8 +68,6 @@ app.get("/profile" ,userAuth, (req,res)=>{
 })
  
  
- 
- 
 //Login-API
 app.post("/login",async (req,res)=>{
  
@@ -89,6 +87,7 @@ app.post("/login",async (req,res)=>{
         throw new Error("Invalid Credentails");
      }
   //in bcrypt.compare first para should be user password and second the database password
+  //(password ,user.password) if  you change thiss order you will get error
       const isPasswordValid = await bcrypt.compare (password ,user.password);
  
       if(isPasswordValid)
@@ -97,10 +96,18 @@ app.post("/login",async (req,res)=>{
         //Add the token and cookie  and send the response back to the server
         //i am hiding this information this inside token and in the second para i will pas a secret key over
         //here this key basically h password only i know (means sever knows only);
+        // const token = await jwt.sign({ _id :user._id},"SajidShaikh@123");
+
+        //we can git it expiry also 1day 1 month or anytime just read the documentation
+        //if you give 1h means 1 hour 
+        //if you want to check you can give 0d and after login you can check profile page
+        //this will show token expired
+        // const token = await jwt.sign({ _id :user._id},"SajidShaikh@123" ,{expiresIn : "1d"});
         const token = await jwt.sign({ _id :user._id},"SajidShaikh@123");
  
         //this is used to attched the cookie inside request
         //user id of user is hiddn inside this token
+        //you can also expire cookie just read documentation of expressJS and res.cookie
         res.cookie("token" ,token)
         res.send("login successfull");
       }
@@ -114,14 +121,6 @@ app.post("/login",async (req,res)=>{
    }
  
 })
- 
- 
- 
- 
- 
- 
- 
- 
  
 //will get All the data from the database first of know which model you have to use
 //if you want to get user data you have to use in user data means user model
