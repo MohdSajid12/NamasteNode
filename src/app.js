@@ -2,7 +2,7 @@ const express = require("express");
 const  app = express();
 const connectDb = require("./config/database");
 const User =  require("./model/user");
-const {validateSignupData} =  require("./utils/validation");
+const {validateSignupData ,validateLoginData} =  require("./utils/validation");
 const bcrypt = require("bcrypt");
  
 app.use(express.json());
@@ -43,6 +43,45 @@ app.post("/signup" ,async (req,res,next)=>{
      }
 })
  
+ 
+//Login-API
+app.post("/login",async (req,res)=>{
+ 
+   try{
+       validateLoginData(req);
+      const {email ,password} =  req.body;
+   
+      //this findOne will return the only one object
+     const user = await User.findOne({email : email});
+ 
+     if(!user)
+     {
+        //this message will good if we show user not found or email is not present
+        //this is kind of data leaking this is the bad habit attackers should not know thar this email
+        //is present or not
+        //no body should know that this email is present or not
+        throw new Error("Invalid Credentails");
+     }
+  //in bcrypt.compare first para should be user password and second the database password
+      const isPasswordValid = await bcrypt.compare (password ,user.password);
+ 
+      if(isPasswordValid)
+      {
+        res.send("login successfull");
+      }
+      else
+      {
+        res.send("Invalid Credentails");
+      }
+ 
+   }catch(err){
+      res.status(400).send("ERROR : " +err.message);
+   }
+ 
+})
+ 
+ 
+
 //will get All the data from the database first of know which model you have to use
 //if you want to get user data you have to use in user data means user model
 //model means user table
@@ -180,4 +219,3 @@ connectDb().then(()=>{
 }).catch(err=>{
     console.log("Something went wrong"+err.message);
 })
- 
