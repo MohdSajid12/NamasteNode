@@ -2,7 +2,8 @@ const express = require("express");
 const  app = express();
 const connectDb = require("./config/database");
 const User =  require("./model/user");
-const {validateSignupData ,validateLoginData} =  require("./utils/validation");
+const {validateSignupData,validateLoginData} =  require("./utils/validation");
+const {userAuth} =  require("./middleware/auth") ;
 const bcrypt = require("bcrypt");
 const cookieParser =  require("cookie-parser"); //this is for getting cookie
 const  jwt = require('jsonwebtoken');
@@ -51,31 +52,13 @@ app.post("/signup" ,async (req,res,next)=>{
 //you make an api call and your api call will not work it  will only work with a token and you will get
 //the token by the calling of an login api
 //now my profile api is 100 secure
-app.get("/profile" , async(req,res)=>{
+//if my api hit /profile it first of all go userAuth middleware it will check the token
+//check the token
+//if we have to create more api in project we have to send middle ware
+app.get("/profile" ,userAuth, (req,res)=>{
+    //the this req my user is availabe because i have attahced in the req in the middleware
     try{
-        //this is build in method for exress of reading cookies but before using it we have to use
-        //middle ware cookie-parser
-        const cookies = req.cookies;
-        const {token} = cookies;
- 
-        if(!token)
-        {
-            throw new Error ('Invalid Token');
-        }
- 
-        //validate my login
-        //if my token will macth will move proceed further otherwise i will readirect on login page
-        //this secret key we have define in the login route we have to pass it to the same
-        //it does not gives boolean value it gives decoded values
-        const decodedMsg = await jwt.verify(token , "SajidShaikh@123" );
-        const {_id} = decodedMsg;
- 
-        const user = await User.findById(_id);
- 
-        //there might be case if token is valid and user does not exist in the DB
-        if(!user){
-            throw new Error("User does not exists");
-        }
+        const user = req.user;
        
         res.send(user);
     }
