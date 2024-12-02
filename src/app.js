@@ -4,8 +4,13 @@ const connectDb = require("./config/database");
 const User =  require("./model/user");
 const {validateSignupData ,validateLoginData} =  require("./utils/validation");
 const bcrypt = require("bcrypt");
+const cookieParser =  require("cookie-parser"); //this is for getting cookie
+const  jwt = require('jsonwebtoken');
+ 
  
 app.use(express.json());
+app.use(cookieParser());   //this middleware for to get the cookie back from the server  
+//when the request is come i will able to read the cookie back
  
 app.post("/signup" ,async (req,res,next)=>{
 //NEVER trust the req.body we should always do validation of data
@@ -43,6 +48,44 @@ app.post("/signup" ,async (req,res,next)=>{
      }
 })
  
+//you make an api call and your api call will not work it  will only work with a token and you will get
+//the token by the calling of an login api
+//now my profile api is 100 secure
+app.get("/profile" , async(req,res)=>{
+    try{
+        //this is build in method for exress of reading cookies but before using it we have to use
+        //middle ware cookie-parser
+        const cookies = req.cookies;
+        const {token} = cookies;
+ 
+        if(!token)
+        {
+            throw new Error ('Invalid Token');
+        }
+ 
+        //validate my login
+        //if my token will macth will move proceed further otherwise i will readirect on login page
+        //this secret key we have define in the login route we have to pass it to the same
+        //it does not gives boolean value it gives decoded values
+        const decodedMsg = await jwt.verify(token , "SajidShaikh@123" );
+        const {_id} = decodedMsg;
+ 
+        const user = await User.findById(_id);
+ 
+        //there might be case if token is valid and user does not exist in the DB
+        if(!user){
+            throw new Error("User does not exists");
+        }
+       
+        res.send(user);
+    }
+    catch(err){
+        res.status(400).send("Error" + err.message);
+    }
+})
+ 
+ 
+ 
  
 //Login-API
 app.post("/login",async (req,res)=>{
@@ -67,6 +110,15 @@ app.post("/login",async (req,res)=>{
  
       if(isPasswordValid)
       {
+        //Create a jwt token
+        //Add the token and cookie  and send the response back to the server
+        //i am hiding this information this inside token and in the second para i will pas a secret key over
+        //here this key basically h password only i know (means sever knows only);
+        const token = await jwt.sign({ _id :user._id},"SajidShaikh@123");
+ 
+        //this is used to attched the cookie inside request
+        //user id of user is hiddn inside this token
+        res.cookie("token" ,token)
         res.send("login successfull");
       }
       else
@@ -81,7 +133,13 @@ app.post("/login",async (req,res)=>{
 })
  
  
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 //will get All the data from the database first of know which model you have to use
 //if you want to get user data you have to use in user data means user model
 //model means user table
